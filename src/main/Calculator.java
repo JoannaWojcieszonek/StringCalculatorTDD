@@ -12,10 +12,9 @@ public class Calculator {
         if(numbers.isEmpty()) {
             return 0;
         }
-        String[] nums = getNumbers(numbers);
-        checkForNegatives(nums);
-        int sum = getSum(nums);
-        return sum;
+        String[] seperateNumbers = getSeperateNumbers(numbers);
+        checkForNegatives(seperateNumbers);
+        return getSum(seperateNumbers);
     }
 
     private void checkForNegatives(String[] nums) throws NegativesNotAllowedException {
@@ -53,7 +52,7 @@ public class Calculator {
         return negatives;
     }
 
-    private String[] getNumbers(String numbers) {
+    private String[] getSeperateNumbers(String numbers) {
         String[] delimiters = getDelimiters(numbers);
         if(delimiters.length!=0) {
             numbers = numbers.split("\n",2)[1];
