@@ -1,8 +1,9 @@
 package main;
 
-import java.util.LinkedList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * Created by joanna on 03.08.16.
@@ -25,31 +26,23 @@ public class Calculator {
     }
 
     private String createMessage(List<Integer> negatives) {
-        String msg = "";
-        for(Integer n: negatives) {
-            msg += n + ",";
-        }
-        msg = msg.substring(0, msg.length()-1);
-        return msg;
+        return negatives.stream()
+                .map(i -> i.toString())
+                .collect(Collectors.joining(","));
     }
 
     private int getSum(String[] numbers) {
-        int sum = 0;
-        for(String num: numbers) {
-            Integer n = Integer.parseInt(num);
-            if(n <= 1000)
-                sum+=n;
-        }
-        return sum;
+        return Arrays.stream(numbers)
+                .mapToInt(Integer::parseInt)
+                .filter(n -> n <= 1000)
+                .sum();
     }
 
-    private List<Integer> findNegatives(String[] nums) {
-        List<Integer> negatives = new LinkedList<>();
-        for(String num: nums) {
-            Integer n = Integer.parseInt(num);
-            if(n < 0) negatives.add(n);
-        }
-        return negatives;
+    private List<Integer> findNegatives(String[] numbers) {
+        return Arrays.stream(numbers)
+                .map(Integer::parseInt)
+                .filter(n -> n < 0)
+                .collect(Collectors.toList());
     }
 
     private String[] getSeperateNumbers(String numbers) {
@@ -57,28 +50,27 @@ public class Calculator {
         if(delimiters.length!=0) {
             numbers = numbers.split("\n",2)[1];
         }
-        String regex = ",|\n";
-        for(String d: delimiters) {
-            regex += "|"+ Pattern.quote(d);
-        }
+        String regex = ",|\n" + Arrays
+                .stream(delimiters)
+                .map(d -> "|"+ Pattern.quote(d))
+                .collect(Collectors.joining());
         return numbers.split(regex);
     }
 
     private String[] getDelimiters(String numbers) {
         String[] delimiters = {};
         if(numbers.startsWith("//")) {
-            String delimiter = numbers.split("\n", 2)[0].substring(2);
-            delimiters = checkForMultipleDelimiters(delimiter);
+            String expression = numbers.split("\n", 2)[0].substring(2);
+            delimiters = checkForMultipleDelimiters(expression);
         }
         return delimiters;
     }
 
-    private String[] checkForMultipleDelimiters(String delimiter) {
-        String[] delimiters = {};
-        if(delimiter.startsWith("[") && delimiter.endsWith("]")) {
-            delimiter = (delimiter.substring(1,delimiter.length()-1));
+    private String[] checkForMultipleDelimiters(String expression) {
+        if(expression.startsWith("[") && expression.endsWith("]")) {
+            expression = (expression.substring(1, expression.length()-1));
         }
-        delimiters = delimiter.split(Pattern.quote("]["));
+        String[] delimiters = expression.split(Pattern.quote("]["));
         return delimiters;
     }
 }
